@@ -1,0 +1,192 @@
+{{template "header" .}}
+<div class="p-8 w-full">
+  <h1 class="pt-4 pb-8 text-3xl font-bold text-gray-800">
+    Edit your Gallery
+  </h1>
+  <form action="/galleries/{{.ID}}" method="post">
+    <div class="hidden">
+      {{csrfField}}
+    </div>
+    <div class="py-2">
+      <label for="title" class="text-sm font-semibold text-gray-800">
+        Title
+      </label>
+      <input
+        name="title"
+        id="title"
+        type="text"
+        placeholder="Gallery Title"
+        required
+        class="
+          w-full
+          px-3
+          py-2
+          border border-gray-300
+          placeholder-gray-500
+          text-gray-800
+          rounded
+        "
+        value="{{.Title}}"
+        autofocus
+      />
+    </div>
+    <div class="py-4">
+      <button
+        type="submit"
+        class="
+          py-2
+          px-8
+          bg-indigo-600
+          hover:bg-indigo-700
+          text-white
+          rounded
+          font-bold
+          text-lg
+        "
+      >
+        Update
+      </button>
+    </div>
+  </form>
+  <div class="py-4">
+    {{template "upload_image_form" .}}
+  </div>
+  <div class="py-4">
+    {{template "images_via_dropbox_form" .}}
+  </div>
+  <div class="py-4">
+    <h2 class="pb-2 text-sm font-semibold text-gray-800">Current Images</h2>
+    <div class="py-2 grid grid-cols-8 gap-2">
+      {{range .Images}}
+        <div class="h-min w-full relative">
+          <div class="absolute top-2 right-2">
+            {{template "delete_image_form" .}}
+          </div>
+          <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}">
+        </div>
+      {{end}}
+    </div>
+  </div>
+  <!-- Danger Actions -->
+  <div class="py-4">
+    <h2>Dangerous Actions</h2>
+    <form action="/galleries/{{.ID}}/delete" method="post"
+      onsubmit="return confirm('Do you really want to delete this gallery?');">
+      <div class="hidden">
+        {{csrfField}}
+      </div>
+      <button
+        type="submit"
+        class="
+          py-2
+          px-8
+          bg-red-600
+          hover:bg-red-700
+          text-white
+          rounded
+          font-bold
+          text-lg
+        "
+      >
+        Delete
+      </button>
+    </form>
+  </div>
+</div>
+{{template "footer" .}}
+
+{{define "delete_image_form"}}
+<form action="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}/delete"
+  method="post"
+  onsubmit="return confirm('Do you really want to delete this image?');">
+  {{csrfField}}
+  <button
+    type="submit"
+    class="
+      p-1
+      text-xs text-red-800
+      bg-red-100
+      border border-red-400
+      rounded
+    ">
+    Delete
+  </button>
+</form>
+{{end}}
+
+
+{{define "upload_image_form"}}
+<form action="/galleries/{{.ID}}/images"
+  method="post"
+  enctype="multipart/form-data">
+  {{csrfField}}
+  <div class="py-2">
+    <label for="images" class="block mb-2 text-sm font-semibold text-gray-800">
+      Add Images
+      <p class="py-2 text-xs text-gray-600 font-normal">
+        Please only upload jpg, png, and gif files.
+      </p>
+    </label>
+    <input type="file" multiple
+      accept="image/png, image/jpeg, image/gif"
+      id="images" name="images" />
+  </div>
+  <button
+    type="submit"
+    class="
+      py-2 px-8
+      bg-indigo-600 hover:bg-indigo-700
+      text-white text-lg font-bold
+      rounded
+    ">
+    Upload
+  </button>
+</form>
+{{end}}
+
+{{define "images_via_dropbox_form"}}
+<form action="/galleries/{{.ID}}/images/url"
+  method="post"
+  enctype="multipart/form-data"
+  id="dropbox-chooser-form">
+  {{csrfField}}
+  <div class="py-2">
+    <p class="block mb-2 text-sm font-semibold text-gray-800">
+      Add Images via Dropbox
+    </p>
+  </div>
+</form>
+{{end}}
+
+{{define "custom-footer"}}
+<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="2svlhhhorc4z5m7"></script>
+<script>
+function setupDropbox() {
+  let dbxForm = document.getElementById("dropbox-chooser-form");
+  if(dbxForm === null) {
+    return;
+  }
+  let options = {
+    success: function(files) {
+      for(let i = 0; i < files.length; i++) {
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "files";
+        input.value = files[i].link;
+        dbxForm.appendChild(input);
+      }
+      dbxForm.submit();
+    },
+    linkType: "direct",
+    multiselect: true,
+    extensions: ["images"],
+    folderselect: false,
+  };
+  let button = Dropbox.createChooseButton(options);
+  dbxForm.appendChild(button);
+}
+setupDropbox();
+</script>
+{{end}}
+
+{{define "page-title"}}Super Awesome Gallery Creator{{end}}

@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.fontSize": 22,
+		"editor.hover.delay": 1500,
+		"editor.hover.enabled": false,
+		"errorLens.fontSize": "0.8rem",
+		"errorLens.fontFamily": "Go Mono",
+		"errorLens.margin": "2ch",
+		"editor.parameterHints.enabled": false,
+		"dimmer.enabled": true,
+		"dimmer.opacity": 35,
+		"dimmer.when": "selection",
+		"window.zoomLevel": 0.5,
+		"github.copilot.enable": {
+			"*": false,
+		},
+	}
+}
